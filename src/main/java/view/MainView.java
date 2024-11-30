@@ -39,8 +39,8 @@ public class MainView extends Application implements PropertyObserver {
     // Composants UI
     private TabPane tabPane;
     private TableView<Property> propertyTable;
-    private TableView<Locataire> tenantTable;
-    private TableView<Contrat> contractTable;
+    private TableView<Locataire> locataireTable;
+    private TableView<Contrat> contratTable;
     private TableView<Transaction> transactionTable;
     private TextArea notificationArea;
 
@@ -118,15 +118,15 @@ public class MainView extends Application implements PropertyObserver {
         Tab tab = new Tab("Locataires");
         tab.setClosable(false);
 
-        tenantTable = new TableView<>();
-        setupTenantTable();
+        locataireTable = new TableView<>();
+        setupLocataireTable();
 
         Button addButton = new Button("Ajouter un locataire");
         addButton.setOnAction(event -> showAddTenantDialog());
 
         VBox content = new VBox(10);
         content.setPadding(new Insets(10));
-        content.getChildren().addAll(addButton, tenantTable);
+        content.getChildren().addAll(addButton, locataireTable);
         tab.setContent(content);
 
         return tab;
@@ -136,15 +136,15 @@ public class MainView extends Application implements PropertyObserver {
         Tab tab = new Tab("Contrats");
         tab.setClosable(false);
 
-        contractTable = new TableView<>();
-        setupContractTable();
+        contratTable = new TableView<>();
+        setupContratTable();
 
         Button addButton = new Button("Nouveau contrat");
         addButton.setOnAction(event -> showAddContractDialog());
 
         VBox content = new VBox(10);
         content.setPadding(new Insets(10));
-        content.getChildren().addAll(addButton, contractTable);
+        content.getChildren().addAll(addButton, contratTable);
         tab.setContent(content);
 
         return tab;
@@ -237,7 +237,7 @@ public class MainView extends Application implements PropertyObserver {
         refreshPropertyTable();
     }
 
-    private void setupTenantTable() {
+    private void setupLocataireTable() {
         TableColumn<Locataire, String> nameCol = new TableColumn<>("Nom");
         nameCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
 
@@ -247,11 +247,11 @@ public class MainView extends Application implements PropertyObserver {
         TableColumn<Locataire, String> phoneCol = new TableColumn<>("Téléphone");
         phoneCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPhone()));
 
-        tenantTable.getColumns().addAll(nameCol, emailCol, phoneCol);
+        locataireTable.getColumns().addAll(nameCol, emailCol, phoneCol);
         refreshTenantTable();
     }
 
-    private void setupContractTable() {
+    private void setupContratTable() {
         TableColumn<Contrat, String> propertyCol = new TableColumn<>("Propriété");
         propertyCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getProperty().getName()));
 
@@ -267,7 +267,7 @@ public class MainView extends Application implements PropertyObserver {
         TableColumn<Contrat, Number> rentCol = new TableColumn<>("Loyer");
         rentCol.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getMonthlyRent()));
 
-        contractTable.getColumns().addAll(propertyCol, tenantCol, startDateCol, endDateCol, rentCol);
+        contratTable.getColumns().addAll(propertyCol, tenantCol, startDateCol, endDateCol, rentCol);
         refreshContractTable();
     }
 
@@ -293,11 +293,11 @@ public class MainView extends Application implements PropertyObserver {
     }
 
     private void refreshTenantTable() {
-        tenantTable.getItems().setAll(model.getTenants());
+        locataireTable.getItems().setAll(model.getLocataires());
     }
 
     private void refreshContractTable() {
-        contractTable.getItems().setAll(model.getContracts());
+        contratTable.getItems().setAll(model.getContrats());
     }
 
     private void refreshTransactionTable() {
@@ -317,7 +317,7 @@ public class MainView extends Application implements PropertyObserver {
 
         // Calcul et affichage du taux d'occupation
         long totalProperties = model.getProperties().size();
-        long rentedProperties = model.getContracts().stream().filter(Contrat::isActive).count();
+        long rentedProperties = model.getContrats().stream().filter(Contrat::isActive).count();
         double occupancyRate = totalProperties > 0 ? (rentedProperties * 100.0) / totalProperties : 0;
 
         ((TextField) ((GridPane) ((VBox) tabPane.getTabs().get(4).getContent()).getChildren().get(0))
@@ -344,7 +344,7 @@ public class MainView extends Application implements PropertyObserver {
     }
 
     private void showAddContractDialog() {
-        ContratDialog dialog = new ContratDialog(model.getProperties(), model.getTenants());
+        ContratDialog dialog = new ContratDialog(model.getProperties(), model.getLocataires());
         Optional<Contrat> result = dialog.showAndWait();
         result.ifPresent(contract -> {
             controller.addContrat(contract);

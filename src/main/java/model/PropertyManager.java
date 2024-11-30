@@ -75,11 +75,11 @@ public class PropertyManager {
         return new ArrayList<>(properties);
     }
 
-    public List<Locataire> getTenants() {
+    public List<Locataire> getLocataires() {
         return new ArrayList<>(locataires);
     }
 
-    public List<Contrat> getContracts() {
+    public List<Contrat> getContrats() {
         return new ArrayList<>(contracts);
     }
 
